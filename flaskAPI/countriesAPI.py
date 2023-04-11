@@ -39,7 +39,7 @@ def add_country():
 def get_country():
     return countries[2]
 
-@app.route('/<int:id>/delete', methods=('POST',))
+@app.route('/delete/<int:id>', methods=('POST',))
 def delete(id):
     if _delete_country(id):
         return "", 204
