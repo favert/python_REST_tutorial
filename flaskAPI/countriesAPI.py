@@ -1,15 +1,27 @@
 # app.py
-from flask import Flask, request, jsonify
+from flask import Flask, Blueprint, request, jsonify
 from markupsafe import escape
 
+from flaskr.db import get_db
 
-app = Flask(__name__)
+bp = Blueprint('countriesAPI', __name__)
 
-countries = [
-    {"id": 1, "name": "Thailand", "capital": "Bangkok", "area": 513120},
-    {"id": 2, "name": "Australia", "capital": "Canberra", "area": 7617930},
-    {"id": 3, "name": "Egypt", "capital": "Cairo", "area": 1010408},
-]
+
+def init_countries():
+    countries = [
+        {"id": 1, "name": "Thailand", "capital": "Bangkok", "area": 513120},
+        {"id": 2, "name": "Australia", "capital": "Canberra", "area": 7617930},
+        {"id": 3, "name": "Egypt", "capital": "Cairo", "area": 1010408},
+    ]
+    print ('Countries initialized.')
+
+def find_countries(id):
+    countries = [
+        {"id": 1, "name": "Thailand", "capital": "Bangkok", "area": 513120},
+        {"id": 2, "name": "Australia", "capital": "Canberra", "area": 7617930},
+        {"id": 3, "name": "Egypt", "capital": "Cairo", "area": 1010408},
+    ]
+    return countries
 
 def _find_next_id():
     return max(country["id"] for country in countries) + 1
@@ -21,11 +33,13 @@ def _delete_country(id):
             return 1
     return 0
 
-@app.get("/countries")
+@bp.route('/countries', methods=('GET','POST'))
+#@app.get("/countries")
 def get_countries():
-    return jsonify(countries)
+    return jsonify(find_countries(0))
 
-@app.post("/countries")
+@bp.route('/countries', methods=('GET','POST'))
+#@app.post("/countries")
 def add_country():
     if request.is_json:
         country = request.get_json()
@@ -35,11 +49,13 @@ def add_country():
     return {"error": "Request must be JSON"}, 415
 
 # note: does not need jasonify for element, only for lists (flask limitation)
-@app.get("/country")
+@bp.route('/country', methods=('GET','POST'))
+#@app.get("/country")
 def get_country():
     return countries[2]
 
-@app.route('/delete/<int:id>', methods=('POST',))
+@bp.route('/delete/<int:id>', methods=('GET','POST'))
+#@app.route('/delete/<int:id>', methods=('POST',))
 def delete(id):
     if _delete_country(id):
         return "", 204
